@@ -1,0 +1,258 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_HOTPARAM DIALOGEX 0, 0, 108, 370
+STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    CONTROL         "",IDC_RESOLUTION,"CustEdit",WS_TABSTOP,58,14,33,10
+    CONTROL         "",IDC_OSIZE,"CustEdit",WS_TABSTOP,58,27,33,10
+    CONTROL         "Interpolation",IDC_INTERPOLATION,"Button",BS_AUTOCHECKBOX | WS_GROUP,9,196,91,10
+    CONTROL         "",IDC_RESOLUTIONSPN,"SpinnerControl",0x0,93,14,7,10
+    CONTROL         "",IDC_SIZESPN,"SpinnerControl",0x0,93,27,7,10
+    RTEXT           "Resolution:",IDC_STATIC,13,14,43,8
+    RTEXT           "Size:",IDC_STATIC,12,27,44,8
+    GROUPBOX        "Ocean:",IDC_STATIC,3,2,102,214
+    CONTROL         "",IDC_WINDSPEED,"CustEdit",WS_TABSTOP,58,40,33,10
+    CONTROL         "",IDC_WAVEHEIGHT,"CustEdit",WS_TABSTOP,58,53,33,10
+    CONTROL         "",IDC_WINDSPEEDSPN,"SpinnerControl",0x0,93,40,7,10
+    CONTROL         "",IDC_WAVEHEIGHTSPN,"SpinnerControl",0x0,93,53,7,10
+    RTEXT           "Wind Speed:",IDC_STATIC,7,40,49,8
+    CONTROL         "",IDC_SHORTESTWAVE,"CustEdit",WS_TABSTOP,58,66,33,10
+    CONTROL         "",IDC_CHOPPINESS,"CustEdit",WS_TABSTOP,58,79,33,10
+    CONTROL         "",IDC_SHORTESTWAVESPN,"SpinnerControl",0x0,93,66,7,10
+    CONTROL         "",IDC_CHOPPINESSSPN,"SpinnerControl",0x0,93,79,7,10
+    RTEXT           "Shortest Wave:",IDC_STATIC,5,66,51,8
+    RTEXT           "Choppiness:",IDC_STATIC,11,79,45,8
+    CONTROL         "",IDC_WINDDIRECTION,"CustEdit",WS_TABSTOP,58,92,33,10
+    CONTROL         "",IDC_DAMPREFLECTION,"CustEdit",WS_TABSTOP,58,105,33,10
+    CONTROL         "",IDC_WINDDIRECTIONSPN,"SpinnerControl",0x0,93,92,7,10
+    CONTROL         "",IDC_DAMPREFLECTIONSPN,"SpinnerControl",0x0,93,105,7,10
+    RTEXT           "Wind Direction:",IDC_STATIC,6,92,50,8
+    RTEXT           "Damp Reflect.:",IDC_STATIC,5,105,51,8
+    CONTROL         "",IDC_WINDALIGN,"CustEdit",WS_TABSTOP,58,118,33,10
+    CONTROL         "",IDC_OCEANDEPTH,"CustEdit",WS_TABSTOP,58,131,33,10
+    CONTROL         "",IDC_WINDALIGNSPN,"SpinnerControl",0x0,93,118,7,10
+    CONTROL         "",IDC_OCEANDEPTHSPN,"SpinnerControl",0x0,93,131,7,10
+    RTEXT           "Wind Align:",IDC_STATIC,13,118,43,8
+    RTEXT           "Ocean Depth:",IDC_STATIC,9,131,47,8
+    CONTROL         "",IDC_TIME,"CustEdit",WS_TABSTOP,58,144,33,10
+    CONTROL         "",IDC_SEED,"CustEdit",WS_TABSTOP,58,157,33,10
+    CONTROL         "",IDC_TIMESPN,"SpinnerControl",0x0,93,144,7,10
+    CONTROL         "",IDC_SEEDSPN,"SpinnerControl",0x0,93,157,7,10
+    RTEXT           "Time:",IDC_STATIC,15,144,41,8
+    RTEXT           "Seed:",IDC_STATIC,14,157,42,8
+    RTEXT           "Wave Height:",IDC_STATIC,9,53,47,8
+    CTEXT           "Houdini Ocean for Max\nAtuhor: Guillaume Plourde\n Jean-Francois Levesque\nEmail: gplourde@gmail.com",IDC_STATIC,3,266,97,35
+    PUSHBUTTON      "About",IDC_ABOUT,29,340,50,14
+    CONTROL         104,IDC_STATIC_PICTURE,"Static",SS_BITMAP | SS_NOTIFY | SS_REALSIZEIMAGE,44,303,21,20
+    CTEXT           "Follow @Hot4MAX",IDC_STATIC,14,328,80,9
+    CTEXT           "Version: 2014.04.20.1",IDC_STATIC,14,358,80,9
+    CONTROL         "",IDC_SCALE,"CustEdit",WS_TABSTOP,58,170,33,10
+    CONTROL         "",IDC_SCALESPN,"SpinnerControl",0x0,93,170,7,10
+    RTEXT           "Scale:",IDC_STATIC,14,170,42,8
+    CONTROL         "Do Chop",IDC_DOCHOP,"Button",BS_AUTOCHECKBOX | WS_GROUP,9,185,91,10
+    CONTROL         "Enable",IDC_DOFOAM,"Button",BS_AUTOCHECKBOX | WS_GROUP,9,231,91,10
+    CONTROL         "",IDC_FOAMSCALE,"CustEdit",WS_TABSTOP,58,243,33,10
+    CONTROL         "",IDC_FOAMSCALESPN,"SpinnerControl",0x0,93,243,7,10
+    GROUPBOX        "Foam:",IDC_STATIC,3,219,102,40
+    RTEXT           "Scale:",IDC_STATIC,13,243,42,8
+END
+
+IDD_SUPPORT DIALOGEX 0, 0, 400, 205
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Hot4MAX"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,175,186,50,14
+    CONTROL         "<a href=""http://www.guillaumeplourde.com/hot_donate.html"">Support Hot4MAX</a>",IDC_SYSLINK1,
+                    "SysLink",WS_TABSTOP,6,139,57,10
+    CTEXT           "Houdini Ocean for 3ds Max 2008 - 2014\nAuthor: Guillaume Plourde and Jean-Francois Levesque\nEmail: gplourde@gmail.com",IDC_STATIC,103,138,194,24
+    CONTROL         103,IDC_STATIC,"Static",SS_BITMAP,0,0,400,89
+    LTEXT           "Support Hot4MAX and help me keep working on this great plugin!\n\n- Get rid of this Dialog!\n- Higher Ocean Resolution!\n- Access to Beta!",IDC_STATIC,6,96,210,40
+    CTEXT           "Copyright 2014, Guillaume Plourde",IDC_STATIC,144,169,113,10
+    CONTROL         104,IDC_STATIC_PICTURE,"Static",SS_BITMAP | SS_NOTIFY | SS_REALSIZEIMAGE,373,180,21,20
+    RTEXT           "Follow @Hot4MAX",IDC_STATIC,297,191,74,9
+END
+
+IDD_ABOUT DIALOGEX 0, 0, 400, 181
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Hot4MAX"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,175,161,50,14
+    CTEXT           "Houdini Ocean for 3ds Max 2008 - 2014\nAuthor: Guillaume Plourde and Jean-Francois Levesque\nEmail: gplourde@gmail.com",-1,105,98,190,24
+    CONTROL         103,-1,"Static",SS_BITMAP,0,0,400,89
+    CTEXT           "Copyright (C) 2014, Guillaume Plourde",-1,135,142,131,12
+    CONTROL         "<a href=""http://www.guillaumeplourde.com"">Hot4MAX</a>",IDC_SYSLINK1,
+                    "SysLink",WS_TABSTOP,185,129,31,10
+    CONTROL         104,IDC_STATIC_PICTURE,"Static",SS_BITMAP | SS_NOTIFY | SS_REALSIZEIMAGE,373,155,21,20
+    RTEXT           "Follow @Hot4MAX",-1,297,166,74,9,0,WS_EX_RIGHT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_HOTPARAM, DIALOG
+    BEGIN
+        VERTGUIDE, 9
+        VERTGUIDE, 58
+        VERTGUIDE, 100
+        BOTTOMMARGIN, 367
+    END
+
+    IDD_SUPPORT, DIALOG
+    BEGIN
+        VERTGUIDE, 6
+        VERTGUIDE, 200
+        VERTGUIDE, 394
+        BOTTOMMARGIN, 181
+        HORZGUIDE, 99
+        HORZGUIDE, 200
+    END
+
+    IDD_ABOUT, DIALOG
+    BEGIN
+        VERTGUIDE, 6
+        VERTGUIDE, 200
+        VERTGUIDE, 394
+        BOTTOMMARGIN, 175
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP1             BITMAP                  "hot4max.bmp"
+IDB_TWITTER             BITMAP                  "twitter.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_RB_HOT              "Houdini_Ocean"
+    IDS_RB_HOT_OSM_CLASS    "Houdini_Ocean"
+    IDS_MODBASED            "Houdini Ocean"
+    IDS_RB_HOTMOD           "Houdini Ocean"
+    IDS_RB_PARAMETERS       "Parameters"
+    IDS_INTERPOLATION       "Interpolation"
+    IDS_SCALE               "Scale"
+    IDS_CENTER              "Center"
+    IDS_LIB_DESC            "Houdini Ocean Toolkit for 3DS Max"
+    IDS_RESOLUTION          "Resolution"
+    IDS_SIZE                "Size"
+    IDS_WINDSPEED           "Wind Speed"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_WAVEHEIGHT          "Wave Height"
+    IDS_SHORTESTWAVE        "Shortest Wave"
+    IDS_CHOPPINESS          "Choppiness"
+    IDS_WINDDIRECTION       "Wind Direction"
+    IDS_DAMPREFLECTION      "Damp Reflection"
+    IDS_WINDALIGN           "Wind Align"
+    IDS_OCEANDEPTH          "Ocean Depth"
+    IDS_TIME                "Time"
+    IDS_SEED                "Seed"
+    IDS_DOCHOP              "Do Chop"
+    IDS_FOAMSCALE           "Foam Scale"
+    IDS_DOFOAM              "Do Foam"
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (Canada) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENC)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_CAN
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (Canada) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
