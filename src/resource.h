@@ -28,7 +28,6 @@
 #define IDS_FOAMSCALE                   26
 #define IDS_DOFOAM                      27
 #define IDD_HOTPARAM                    101
-#define IDD_SUPPORT                     102
 #define IDB_BITMAP1                     103
 #define IDD_ABOUT                       103
 #define IDB_TWITTER                     104

@@ -1,7 +1,7 @@
 /*
 Houdini Ocean Toolkit for Autodesk 3ds Max
 
-Copyright (C) 2013
+Copyright (C) 2015
 
 Guillaume Plourde, gplourde@gmail.com
 Drew Whitehouse, ANU Supercomputer Facility, Drew.Whitehouse@anu.edu.au
@@ -29,6 +29,7 @@ HINSTANCE hInstance;
 
 static int rebuildCount;
 static GenSubObjType SOT_Center(18);
+
 static FPInterfaceDesc hot_interface(
 	HOT_INTERFACE, _T("hot"), 0, &hotDesc, FP_MIXIN,
 	IHoudiniOcean::hot_getpointjminus, _T("GetPointJminus"), 0, TYPE_FLOAT, 0, 1, _T("point"), 0, TYPE_POINT2,
@@ -106,7 +107,12 @@ INT_PTR HotDlgProc::DlgProc(TimeValue t, IParamMap2 *map, HWND hWnd,UINT msg, WP
 					break;
 
 				case IDC_ABOUT:
+#ifdef DEMO
 					DialogBox(hInstance, MAKEINTRESOURCE(IDD_SUPPORT), hWnd, AboutDlgProc);
+#else
+					DialogBox(hInstance, MAKEINTRESOURCE(IDD_ABOUT), hWnd, AboutDlgProc);
+#endif
+
 					break;
 			}    
 		break;
@@ -211,8 +217,11 @@ RefTargetHandle HotMod::Clone(RemapDir& remap)
 	return(newmod);
 }
 
-#ifndef MAX2015
+#if MAXVERSION < 2015 
 RefResult HotMod::NotifyRefChanged(Interval changeInt, RefTargetHandle hTarget, PartID& partID, RefMessage message)
+#else
+RefResult HotMod::NotifyRefChanged(const Interval& changeInt, RefTargetHandle hTarget, PartID& partID, RefMessage message, BOOL propagate)
+#endif
 {
 	switch (message)
 	{
@@ -228,27 +237,6 @@ RefResult HotMod::NotifyRefChanged(Interval changeInt, RefTargetHandle hTarget, 
 	}
 	return REF_SUCCEED;
 }
-#else
-RefResult HotMod::NotifyRefChanged(const Interval& changeInt,RefTargetHandle hTarget, PartID& partID, RefMessage message, BOOL propagate)
-{
-	switch (message)
-	{
-		case REFMSG_CHANGE:	
-		{ 
-			if (hTarget == pblock2)
-			{
-				ParamID changing_param = pblock2->LastNotifyParamID();
-				hot_param_blk.InvalidateUI(changing_param);
-
-				if (changing_param != 10 && changing_param != 3 && changing_param != 5)
-					_ocean_needs_rebuild = true;
-			}
-			break;
-		}
-	}
-	return REF_SUCCEED;
-}
-#endif
 
 Interval HotMod::GetValidity(TimeValue t)
 {
@@ -276,7 +264,7 @@ Interval HotMod::GetValidity(TimeValue t)
 
 	// Center
 	Matrix3 mat(1);
-	tmControl->GetValue(t, &mat, iv, CTRL_RELATIVE);
+	if (tmControl) tmControl->GetValue(t, &mat, iv, CTRL_RELATIVE);
 
 	return iv;
 }
@@ -330,11 +318,12 @@ void HotMod::ModifyTriObject(TimeValue t, ModContext &mc, TriObject* obj, Interv
 
 	Mesh* mesh = &obj->GetMesh();
 
-	if (do_foam)
-	{
-		mesh->setNumVertCol(mesh->numVerts);
-		mesh->setNumVCFaces(mesh->numFaces);
-	}
+	
+	if (!mesh) return;
+	if (mesh->selLevel == MESH_EDGE) return;
+
+	mesh->setNumVertCol(mesh->numVerts);
+	mesh->setNumVCFaces(mesh->numFaces);
 
 	for (int i = 0; i < mesh->numVerts; i++)
 	{
@@ -369,23 +358,19 @@ void HotMod::ModifyTriObject(TimeValue t, ModContext &mc, TriObject* obj, Interv
 		}
 	}
 
-	if (do_foam)
+	for (int i=0; i < mesh->numFaces; i++)
 	{
-		for (int i=0; i < mesh->numFaces; i++)
-		{
-			mesh->vcFace[i].t[0] = mesh->faces[i].v[0];
-			mesh->vcFace[i].t[1] = mesh->faces[i].v[1];
-			mesh->vcFace[i].t[2] = mesh->faces[i].v[2];
-		}
+		mesh->vcFace[i].t[0] = mesh->faces[i].v[0];
+		mesh->vcFace[i].t[1] = mesh->faces[i].v[1];
+		mesh->vcFace[i].t[2] = mesh->faces[i].v[2];
 	}
-	obj->UpdateValidity(GEOM_CHAN_NUM, iv);
 }
 
 Matrix3 HotMod::CompMatrix (TimeValue t, INode *inode, ModContext *mc, Interval *validity) 
 {
 	Interval iv;
 	Matrix3 tm(1);		
-	tmControl->GetValue(t,&tm,iv,CTRL_RELATIVE);
+	if (tmControl) tmControl->GetValue(t,&tm,iv,CTRL_RELATIVE);
 	if (mc && mc->tm) tm = tm * Inverse(*(mc->tm));
 	if (inode) 
 	{
@@ -412,15 +397,6 @@ void HotMod::ModifyObject(TimeValue t, ModContext &mc, ObjectState *os, INode *n
 
 	if (!_ocean || _ocean_needs_rebuild)
     {
-
-		rebuildCount++;
-
-		if (rebuildCount > MAXREBUILDCOUNT)
-		{
-			rebuildCount = 0;
-			DialogBox(hInstance, MAKEINTRESOURCE(IDD_SUPPORT), GetCOREInterface()->GetMAXHWnd(), AboutDlgProc);
-		}
-
 		if (_ocean) delete _ocean;
 		if (_ocean_context) delete _ocean_context;
 
@@ -442,19 +418,76 @@ void HotMod::ModifyObject(TimeValue t, ModContext &mc, ObjectState *os, INode *n
         _ocean_scale = _ocean->get_height_normalize_factor();
         _ocean_context = _ocean->new_context(true, do_chop, do_normals, do_jacobian);
 		_ocean_needs_rebuild = false;
+		updateNeeded = true;
      }
 
-    _ocean->update(time, *_ocean_context, true, do_chop, do_normals, do_jacobian, _ocean_scale * waveHeigth, choppiness);
+		if (updateNeeded ||
+		PRV_windSpeed != windSpeed ||
+		PRV_waveHeigth != waveHeigth ||
+		PRV_shortestWave != shortestWave ||
+		PRV_choppiness != choppiness ||
+		PRV_windDirection != windDirection ||
+		PRV_dampReflections != dampReflections ||
+		PRV_windAlign != windAlign ||
+		PRV_oceanDepth != oceanDepth ||
+		PRV_time != time ||
+		PRV_scale != scale)
+	{
+#ifdef DEMO
+		rebuildCount++;
+#endif
+		_ocean->update(time, *_ocean_context, true, do_chop, do_normals, do_jacobian, _ocean_scale * waveHeigth, choppiness);
+		updateNeeded = false;
+	}
+
+#ifdef DEMO
+		if (rebuildCount > MAXREBUILDCOUNT)
+		{
+			rebuildCount = 0;
+			DialogBox(hInstance, MAKEINTRESOURCE(IDD_SUPPORT), GetCOREInterface()->GetMAXHWnd(), AboutDlgProc);
+		}
+#endif
 
 	Matrix3 tm  = CompMatrix (t, NULL, &mc, &iv);
 	Point3 p = tm.GetTrans();
 
 	Point2 offset = Point2(p.x, p.y);
+
+	if (os->obj->IsMappable() && do_foam)
+	{
+		if (os->obj->IsSubClassOf(triObjectClassID))
+		{
+			TriObject *tobj = (TriObject*)os->obj;
+			ModifyTriObject (t, mc, tobj, iv, offset);
+		}
+		else if (os->obj->IsSubClassOf(polyObjectClassID))
+		{
+			PolyObject *pPolyObj = (PolyObject*)os->obj;
+			//ModifyPolyObject (t, mc, pPolyObj, iv, offset);
+		}
+	}
+	else
+	{
+		//os->obj->Deform(&GetDeformer(t, offset));
+	}
 	
-	os->obj->Deform(&GetDeformer(t, offset));
+	os->obj->Deform(&GetDeformer(t, mc, offset), TRUE);
 
 	// Base function
-	ModifyTriObject (t, mc, (TriObject *)os->obj, iv, offset);
+
+	// Update previous ocean setting to current value
+	PRV_windSpeed = windSpeed;
+	PRV_waveHeigth = waveHeigth;
+	PRV_shortestWave = shortestWave;
+	PRV_choppiness = choppiness;
+	PRV_windDirection = windDirection;
+	PRV_dampReflections = dampReflections;
+	PRV_windAlign = windAlign;
+	PRV_oceanDepth = oceanDepth;
+	PRV_time = time;
+	PRV_scale = scale;
+
+	os->obj->UpdateValidity(GEOM_CHAN_NUM, iv);
 }
 
 BOOL HotMod::AssignController(Animatable *control,int subAnim)
@@ -503,6 +536,7 @@ TSTR HotMod::SubAnimName(int i)
 	}
 };
 
+#ifndef UNSUPPORTED
 float HotMod::fnGetPointJminus(Point2 p)
 {
 	drw::EvalData evaldata; 
@@ -518,6 +552,7 @@ float HotMod::fnGetPointJminus(Point2 p)
 
 	return jm;
 }
+#endif
 
 inline UWORD FlToWord(float r)
 {
@@ -644,7 +679,7 @@ Point3 HotMod::fnGetPointEminus(Point2 p)
 // Deformer plugin code
 
 
-HotDeformer::HotDeformer(drw::Ocean* _o, drw::OceanContext* _oc, float scale, bool interp, bool chop, Point2 p)
+HotDeformer::HotDeformer(drw::Ocean* _o, drw::OceanContext* _oc, float scale, bool interp, bool chop, ModContext &mc, Point2 p)
 {
 	envGlobalScale = GetMasterScale(UNITS_METERS);
 	oneOverGlobalScale = scale / GetMasterScale(UNITS_METERS);
@@ -672,10 +707,10 @@ Point3 HotDeformer::Map(int i, Point3 p)
 }
 
 // This method returns our deformer object
-Deformer& HotMod::GetDeformer(TimeValue t, Point2 p)
+Deformer& HotMod::GetDeformer(TimeValue t, ModContext &mc, Point2 p)
 {
 	static HotDeformer deformer;
-	deformer = HotDeformer(_ocean, _ocean_context, scale, do_interp, do_chop, p);
+	deformer = HotDeformer(_ocean, _ocean_context, scale, do_interp, do_chop, mc, p);
 	return deformer;
 };
 
@@ -686,7 +721,7 @@ int HotMod::HitTest(
 		IPoint2 *p, ViewExp *vpt, ModContext* mc)
 	{
 
-#ifdef MAX2013
+#if MAXVERSION > MAX2012
 	if ( ! vpt || ! vpt->IsAlive() )
 	{
 		// why are we here
@@ -720,7 +755,7 @@ int HotMod::Display(
 		TimeValue t, INode* inode, ViewExp *vpt, 
 		int flagst, ModContext *mc)
 	{
-#ifdef MAX2013
+#if MAXVERSION > MAX2012
 	if ( ! vpt || ! vpt->IsAlive() )
 	{
 		// why are we here
@@ -755,7 +790,7 @@ void HotMod::GetWorldBoundBox(
 		Box3& box, ModContext *mc)
 	{
 
-#ifdef MAX2013
+#if MAXVERSION > MAX2012
 	if ( ! vpt || ! vpt->IsAlive() )
 	{
 		// why are we here

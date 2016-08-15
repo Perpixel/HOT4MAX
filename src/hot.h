@@ -1,7 +1,7 @@
 /*
 Houdini Ocean Toolkit for Autodesk 3ds Max
 
-Copyright (C) 2013
+Copyright (C) 2015
 
 Guillaume Plourde, gplourde@gmail.com
 Drew Whitehouse, ANU Supercomputer Facility, Drew.Whitehouse@anu.edu.au
@@ -35,19 +35,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "max.h"
 #include "resource.h"
 
-#include "simpmod.h"
-#include "simpobj.h"
 #include "iparamm2.h"
 #include "iFnPub.h"
 
 #include <bmmlib.h>
-#include "AssetManagement\iassetmanager.h"
 
-#ifdef MAX2012
-#include "ref.h"
-#else
+#include "AssetManagement\iassetmanager.h"
 #include "ReferenceSaveManager.h"
-#endif
 
 #define HOT4MAX_VERSION 3
 
@@ -55,13 +49,17 @@ const Class_ID HOT4MAX_CLASS_ID(0x30928ee2, 0x719e8ae6);
 const unsigned short HOT_PBLOCK_REF(0);
 #define TM_REF		1
 
-#ifdef MAX2013
+#if MAXVERSION > 2012
 int end = p_end;
 #endif
 
 #define MAXREBUILDCOUNT 500
 
-float MAX_RESOLUTION = 8.0f;
+#ifdef DEMO
+float MAX_RESOLUTION = 6.0f;
+#else
+float MAX_RESOLUTION = 12.0f;
+#endif
 
 #define M_PI 3.14159265358979323846	
 
@@ -92,11 +90,11 @@ public:
 
 	FPInterfaceDesc* GetDesc();
 
+
 	virtual float fnGetPointJminus(Point2 p) = 0;
 	virtual void fnSaveJminusMap(const TCHAR *filename) = 0;
 	virtual void fnSaveHeightMap(const TCHAR *filename) = 0;
 	virtual Point3 fnGetPointEminus(Point2 p) = 0;
-	
 };
 
 class HotMod : public IHoudiniOcean
@@ -126,7 +124,7 @@ public:
 	void GetClassName(TSTR& s) { s= GetString(IDS_RB_HOT_OSM_CLASS); }
 	virtual Class_ID ClassID() { return HOT4MAX_CLASS_ID;}
 	RefTargetHandle Clone(RemapDir& remap);
-#ifdef MAX2013
+#if MAXVERSION > 2012
 	const TCHAR *GetObjectName() { return GetString(IDS_RB_HOT);}
 #else
 	TCHAR *GetObjectName() { return GetString(IDS_RB_HOT);}
@@ -152,7 +150,7 @@ public:
 	void fnSaveJminusMap(const TCHAR *filename);
 	void fnSaveHeightMap(const TCHAR *filename);
 	Point3 fnGetPointEminus(Point2 p);
-
+	/*
 	BaseInterface* GetInterface(Interface_ID id) 
 	{ 
 		if (id == HOT_INTERFACE) 
@@ -160,11 +158,16 @@ public:
 		else 
 			return Modifier::GetInterface(id);
 	} 
+	*/
 
 	// From Modifier
-	ChannelMask ChannelsUsed()  {return PART_GEOM | PART_TOPO | PART_VERTCOLOR;}
-	ChannelMask ChannelsChanged() {return PART_GEOM | PART_VERTCOLOR;}
-	Class_ID InputType() { return defObjectClassID; }
+	//ChannelMask ChannelsUsed()  {return GEOM_CHANNEL | TOPO_CHANNEL | PART_VERTCOLOR | SELECT_CHANNEL | SUBSEL_TYPE_CHANNEL;}
+	//ChannelMask ChannelsChanged() {return GEOM_CHANNEL | PART_VERTCOLOR;}
+	ChannelMask ChannelsUsed()  { return GEOM_CHANNEL|TOPO_CHANNEL|SELECT_CHANNEL|SUBSEL_TYPE_CHANNEL; }
+	ChannelMask ChannelsChanged() { return GEOM_CHANNEL; }
+
+	Class_ID InputType() { return defObjectClassID; } // DEFORM Mesh only
+
 	void ModifyObject(TimeValue t, ModContext &mc, ObjectState *os, INode *node);
 	void ModifyTriObject(TimeValue t, ModContext &mc, TriObject* tobj, Interval iv, Point2 center);
 	//void ModifyPolyObject(TimeValue t, ModContext &mc, PolyObject *pobj);
@@ -192,10 +195,10 @@ public:
 	int NumRefs() { return 2; }
 	RefTargetHandle GetReference(int i);
 	
-#ifndef MAX2015
+#if MAXVERSION < 2015 
 	RefResult NotifyRefChanged(Interval changeInt, RefTargetHandle hTarget, PartID& partID, RefMessage message);
 #else
-	RefResult NotifyRefChanged( const Interval& changeInt,RefTargetHandle hTarget, PartID& partID, RefMessage message, BOOL propagate);
+	RefResult NotifyRefChanged(const Interval& changeInt, RefTargetHandle hTarget, PartID& partID, RefMessage message, BOOL propagate);
 #endif
 
 private:
@@ -232,7 +235,23 @@ public:
 
 	void UpdateOcean(TimeValue t);
 
-	Deformer& GetDeformer(TimeValue t, Point2 p);
+	Deformer& GetDeformer(TimeValue t, ModContext &mc, Point2 p);
+
+private:
+	bool updateNeeded;
+	float PRV_res;
+	float PRV_size;
+	float PRV_windSpeed;
+	float PRV_waveHeigth;
+	float PRV_shortestWave;
+	float PRV_choppiness;
+	float PRV_windDirection;
+	float PRV_dampReflections;
+	float PRV_windAlign;
+	float PRV_oceanDepth;
+	float PRV_time;
+	float PRV_seed;
+	float PRV_scale;
 
 protected:
 	// This is where all the wave action takes place
@@ -248,7 +267,7 @@ class HotDeformer: public Deformer
 {
 public:
 	HotDeformer() {}
-	HotDeformer(drw::Ocean* _ocean, drw::OceanContext* _ocean_context, float globalScale, bool do_interpolation, bool do_chop, Point2 CenterOffset);
+	HotDeformer(drw::Ocean* _ocean, drw::OceanContext* _ocean_context, float globalScale, bool do_interpolation, bool do_chop, ModContext &mc, Point2 CenterOffset);
 
 	Point3 Map(int i, Point3 p);
 

@@ -1,0 +1,9 @@
+LIBRARY hotOcean_Max_2009.dlm
+EXPORTS
+   LibDescription    @1       PRIVATE
+   LibNumberClasses  @2       PRIVATE
+   LibClassDesc      @3       PRIVATE        
+   LibVersion        @4       PRIVATE
+SECTIONS
+   .data READ WRITE
+
