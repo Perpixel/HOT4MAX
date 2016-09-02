@@ -53,13 +53,7 @@ const unsigned short HOT_PBLOCK_REF(0);
 int end = p_end;
 #endif
 
-#define MAXREBUILDCOUNT 500
-
-#ifdef DEMO
-float MAX_RESOLUTION = 6.0f;
-#else
 float MAX_RESOLUTION = 12.0f;
-#endif
 
 #define M_PI 3.14159265358979323846	
 

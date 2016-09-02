@@ -27,7 +27,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 HINSTANCE hInstance;
 
-static int rebuildCount;
 static GenSubObjType SOT_Center(18);
 
 static FPInterfaceDesc hot_interface(
@@ -107,11 +106,7 @@ INT_PTR HotDlgProc::DlgProc(TimeValue t, IParamMap2 *map, HWND hWnd,UINT msg, WP
 					break;
 
 				case IDC_ABOUT:
-#ifdef DEMO
-					DialogBox(hInstance, MAKEINTRESOURCE(IDD_SUPPORT), hWnd, AboutDlgProc);
-#else
 					DialogBox(hInstance, MAKEINTRESOURCE(IDD_ABOUT), hWnd, AboutDlgProc);
-#endif
 
 					break;
 			}    
@@ -122,8 +117,6 @@ INT_PTR HotDlgProc::DlgProc(TimeValue t, IParamMap2 *map, HWND hWnd,UINT msg, WP
 
 HotMod::HotMod() 
 {
-	rebuildCount = MAXREBUILDCOUNT + 1;
-
 	_ocean = 0;
 	_ocean_context = 0;
 	_ocean_scale = 1.0f;
@@ -421,7 +414,7 @@ void HotMod::ModifyObject(TimeValue t, ModContext &mc, ObjectState *os, INode *n
 		updateNeeded = true;
      }
 
-		if (updateNeeded ||
+	if (updateNeeded ||
 		PRV_windSpeed != windSpeed ||
 		PRV_waveHeigth != waveHeigth ||
 		PRV_shortestWave != shortestWave ||
@@ -433,20 +426,9 @@ void HotMod::ModifyObject(TimeValue t, ModContext &mc, ObjectState *os, INode *n
 		PRV_time != time ||
 		PRV_scale != scale)
 	{
-#ifdef DEMO
-		rebuildCount++;
-#endif
 		_ocean->update(time, *_ocean_context, true, do_chop, do_normals, do_jacobian, _ocean_scale * waveHeigth, choppiness);
 		updateNeeded = false;
 	}
-
-#ifdef DEMO
-		if (rebuildCount > MAXREBUILDCOUNT)
-		{
-			rebuildCount = 0;
-			DialogBox(hInstance, MAKEINTRESOURCE(IDD_SUPPORT), GetCOREInterface()->GetMAXHWnd(), AboutDlgProc);
-		}
-#endif
 
 	Matrix3 tm  = CompMatrix (t, NULL, &mc, &iv);
 	Point3 p = tm.GetTrans();
