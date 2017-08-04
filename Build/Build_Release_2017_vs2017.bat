@@ -2,7 +2,7 @@
 
 pushd ..\
 
-set SdkVersion=2018
+set SdkVersion=2017
 set Toolset=v141
 set MSBUILD_PATH="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin"
 

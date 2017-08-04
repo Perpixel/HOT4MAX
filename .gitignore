@@ -37,7 +37,9 @@ Icon
 
 # Guillaume
 
-3rdparty/
+3rdparty/7z
+3rdparty/Autodesk
+3rdparty/loki-0.1.7
 Output/
 plugins/
 release/
