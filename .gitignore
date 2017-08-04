@@ -43,4 +43,10 @@ plugins/
 release/
 scripts/
 
+
+vs2012/.vs/
 *.suo
+*.user
+*.sdf
+*.db
+*.ipch
