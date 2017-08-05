@@ -1,0 +1,25 @@
+Author
+Guillaume Plourde, gplourde@gmail.com
+
+Installation
+
+    Install the Visual c++ Redistributable 2012 for your system
+    Copy libfftw3f-3.dll to your 3ds Max root directory
+    Copy hotOcean_Max_20XX.dlm to your 3dsmax\plugins directory
+
+Usage
+Apply the Houdini_Ocean modifier to any mesh object. For best result use a plane object with over 100 heigth and width segments. The following properties are avialable,
+
+    Resolution
+    Size
+    Wind speed
+    Wave height
+    Shortest wave
+    Choppiness
+    Wind direction
+    Damp Reflection
+    Wind Align
+    Ocean depth
+    Time
+    Seed
+    Interpolation
