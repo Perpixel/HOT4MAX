@@ -3,8 +3,8 @@ Guillaume Plourde, gplourde@gmail.com
 
 Installation
 
-    Install the Visual c++ Redistributable 2012 for your system
-    Copy libfftw3f-3.dll to your 3ds Max root directory
+    Install the Visual c++ Redistributable 2012 for your system. Max 2018 and 2019 require the 2017 version Redist.
+    Copy libfftw3f-3.dll to your 3ds Max root directory (Only if the file is bundle with the plugin.)
     Copy hotOcean_Max_20XX.dlm to your 3dsmax\plugins directory
 
 Usage
